@@ -29,6 +29,17 @@ pixi run test-e2e   # end-to-end pytest on left.jpg / right.jpg
 - The e2e test resizes the samples to fit an 8 GiB GPU. Use `pixi run test-e2e-full` for the original 1008x756 images (needs more VRAM).
 - `models/ihn/network.py` uses `kornia.geometry.transform.get_perspective_transform` instead of the unmaintained `torchgeometry` (same DLT algorithm, already used in `models/ihn/utils.py`).
 
+### Gradio demo (optional)
+`gradio` lives in a separate pixi environment (`-e gradio`) so the default environment stays lightweight.
+```
+pixi run -e gradio setup                       # build pysrwarp + download the weights
+pixi run -e gradio app                         # open http://127.0.0.1:7860
+pixi run -e gradio python -m pytest tests/test_gradio_app.py
+```
+- Both inputs are automatically resized so their longest side fits the "処理の最大辺" slider (default 512 px, 8 GiB GPU friendly); the processed size is shown before stitching.
+- Results are served and downloaded as PNG (`gr.Image(format="png")`).
+- `pydantic` is pinned `<2.10` in the gradio feature: newer versions emit boolean `additionalProperties` JSON schemas that `gradio-client` 1.3 (bundled with gradio 4.44) cannot parse.
+
 ## Dataset
 - [UDIS-D](https://github.com/nie-lang/UnsupervisedDeepImageStitching)
 - [MS-COCO 2017v](https://cocodataset.org/#download)

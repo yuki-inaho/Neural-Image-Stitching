@@ -12,6 +12,11 @@ SRC_DIR="${PYSRWARP_DIR:-$REPO_ROOT/.cache/pysrwarp}"
 COMMIT="${PYSRWARP_COMMIT:-803125536675a22add19eb31a7e0c296f60b0ff2}"
 REPO_URL="https://github.com/sanghyun-son/pysrwarp.git"
 
+if [ "${PYSRWARP_FORCE:-0}" != "1" ] && python -c "import torch, srwarp_cuda" >/dev/null 2>&1; then
+    echo "==> pysrwarp already installed for $(python -c 'import sys; print(sys.executable)'), skipping (PYSRWARP_FORCE=1 to rebuild)"
+    exit 0
+fi
+
 if [ ! -d "$SRC_DIR/.git" ]; then
     mkdir -p "$(dirname "$SRC_DIR")"
     git init -q "$SRC_DIR"

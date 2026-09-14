@@ -32,10 +32,11 @@ pixi run test-e2e   # end-to-end pytest on left.jpg / right.jpg
 ### Gradio demo (optional)
 `gradio` lives in a separate pixi environment (`-e gradio`) so the default environment stays lightweight.
 ```
-pixi run -e gradio setup                       # build pysrwarp + download the weights
-pixi run -e gradio app                         # open http://127.0.0.1:7860
-pixi run -e gradio python -m pytest tests/test_gradio_app.py
+pixi run -e gradio start   # first time: build pysrwarp + download weights + launch (http://127.0.0.1:7860)
+pixi run -e gradio app     # launch only (after the first `start`)
+pixi run -e gradio test-app
 ```
+- Starting the app from another environment (`pixi run app`) prints a hint to use `pixi run -e gradio start`.
 - Both inputs are automatically resized so their longest side fits the "処理の最大辺" slider (default 512 px, 8 GiB GPU friendly); the processed size is shown before stitching.
 - Results are served and downloaded as PNG (`gr.Image(format="png")`).
 - `pydantic` is pinned `<2.10` in the gradio feature: newer versions emit boolean `additionalProperties` JSON schemas that `gradio-client` 1.3 (bundled with gradio 4.44) cannot parse.

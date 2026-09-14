@@ -39,7 +39,10 @@ gradio = ">=4.44,<5"
 pydantic = ">=2.0,<2.10"
 
 [feature.gradio.tasks]
-app = "python app.py"
+# First-time and repeated launches: `pixi run -e gradio start` (setup is skipped
+# when already done), `pixi run -e gradio app` once the env is prepared.
+start = { cmd = "bash scripts/run_app.sh", depends-on = ["install-pysrwarp", "download-pretrained"] }
+test-app = "pytest tests/test_gradio_app.py -v"
 
 [environments]
 default = { solve-group = "default" }
@@ -48,6 +51,7 @@ gradio = { features = ["gradio"], solve-group = "default" }
 [tasks]
 install-pysrwarp = "bash scripts/setup_pysrwarp.sh"
 download-pretrained = "bash scripts/download_pretrained.sh"
+app = "bash scripts/run_app.sh"
 test = "pytest tests -v"
 test-e2e = "pytest tests/test_e2e_stitch.py -v -s"
 test-e2e-full = { cmd = "pytest tests/test_e2e_stitch.py -v -s", env = { NIS_E2E_SCALE = "1" } }

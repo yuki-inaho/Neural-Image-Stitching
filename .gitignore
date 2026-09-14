@@ -1,0 +1,15 @@
+# pixi environment
+.pixi/
+
+# downloaded assets / build scratch
+.cache/
+pretrained/
+
+# inference outputs
+results.png
+visualization/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/

@@ -16,6 +16,19 @@ cd pysrwarp
 make
 ```
 
+### Pixi environment (reproducible alternative)
+`pixi.toml` pins Python 3.9, PyTorch 1.10.2+cu113 and the inference dependencies.
+```
+pixi install        # create .pixi/envs/default
+pixi run setup      # build pysrwarp + download the pretrained weights
+pixi run test-e2e   # end-to-end pytest on left.jpg / right.jpg
+```
+- `pysrwarp` is cloned to `.cache/pysrwarp` at a pinned commit and built with the host CUDA toolkit (`CUDA_HOME` / `NVCC`, `PYSRWARP_CUDA_ARCH` to override the GPU arch).
+- `scripts/download_pretrained.sh` fetches the official Google Drive archive with gdown, verifies SHA-256 and extracts it into `pretrained/`.
+- `pysrwarp` defines a `NUM_THREADS` macro that collides with CUB template parameters on CUDA >= 12; the setup script renames it.
+- The e2e test resizes the samples to fit an 8 GiB GPU. Use `pixi run test-e2e-full` for the original 1008x756 images (needs more VRAM).
+- `models/ihn/network.py` uses `kornia.geometry.transform.get_perspective_transform` instead of the unmaintained `torchgeometry` (same DLT algorithm, already used in `models/ihn/utils.py`).
+
 ## Dataset
 - [UDIS-D](https://github.com/nie-lang/UnsupervisedDeepImageStitching)
 - [MS-COCO 2017v](https://cocodataset.org/#download)

@@ -1,0 +1,44 @@
+[workspace]
+name = "neural-image-stitching"
+version = "0.1.0"
+description = "NIS (WACV 2024) image stitching: inference environment and end-to-end tests"
+channels = ["conda-forge", "pytorch"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.9.*"
+pip = ">=23"
+pytorch = { version = "==1.10.2", build = "py3.9_cuda11.3*" }
+torchvision = { version = "==0.11.3", build = "py39_cu113" }
+cudatoolkit = "11.3.*"
+mkl = ">=2023,<2024"
+setuptools = ">=59,<81"
+numpy = ">=1.21,<2"
+pyyaml = ">=6.0"
+tensorboardx = ">=2.5"
+kornia = "==0.6.6"
+scipy = ">=1.7,<1.14"
+scikit-image = ">=0.19,<0.25"
+imageio = ">=2.15"
+pillow = ">=8.4"
+gdown = ">=4.7"
+pytest = ">=7.4"
+matplotlib = ">=3.5"
+jupyterlab = ">=4.0"
+ipykernel = ">=6"
+ipywidgets = ">=8"
+nbconvert = ">=7"
+
+[pypi-dependencies]
+opencv-contrib-python = "==4.7.0.68"
+
+[tasks]
+install-pysrwarp = "bash scripts/setup_pysrwarp.sh"
+download-pretrained = "bash scripts/download_pretrained.sh"
+test = "pytest tests -v"
+test-e2e = "pytest tests/test_e2e_stitch.py -v -s"
+test-e2e-full = { cmd = "pytest tests/test_e2e_stitch.py -v -s", env = { NIS_E2E_SCALE = "1" } }
+lab = "jupyter lab --notebook-dir=notebooks"
+nb-exec = "jupyter nbconvert --execute --to notebook --inplace notebooks/01_stitching_example.ipynb"
+setup = { depends-on = ["install-pysrwarp", "download-pretrained"] }
+e2e = { depends-on = ["setup", "test-e2e"] }

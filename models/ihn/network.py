@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchgeometry as tgm
+from kornia.geometry.transform import get_perspective_transform
 from .update import GMA
 from .extractor import BasicEncoderQuarter
 from .corr import CorrBlock
@@ -33,7 +33,7 @@ class IHN(nn.Module):
         four_point_new = four_point_org + four_point
         four_point_org = four_point_org.flatten(2).permute(0, 2, 1)
         four_point_new = four_point_new.flatten(2).permute(0, 2, 1)
-        H = tgm.get_perspective_transform(four_point_org, four_point_new)
+        H = get_perspective_transform(four_point_org.contiguous(), four_point_new.contiguous())
         gridy, gridx = torch.meshgrid(torch.linspace(0, self.sz[3]-1, steps=self.sz[3]), torch.linspace(0, self.sz[2]-1, steps=self.sz[2]))
         points = torch.cat((gridx.flatten().unsqueeze(0), gridy.flatten().unsqueeze(0), torch.ones((1, self.sz[3] * self.sz[2]))),
                            dim=0).unsqueeze(0).repeat(self.sz[0], 1, 1).to(four_point.device)
@@ -57,7 +57,7 @@ class IHN(nn.Module):
         four_point_new = four_point_org + four_point
         four_point_org = four_point_org.flatten(2).permute(0, 2, 1)
         four_point_new = four_point_new.flatten(2).permute(0, 2, 1)
-        H = tgm.get_perspective_transform(four_point_org, four_point_new)
+        H = get_perspective_transform(four_point_org.contiguous(), four_point_new.contiguous())
         gridy, gridx = torch.meshgrid(torch.linspace(0, self.sz[3]-1, steps=self.sz[3]), torch.linspace(0, self.sz[2]-1, steps=self.sz[2]))
         points = torch.cat((gridx.flatten().unsqueeze(0), gridy.flatten().unsqueeze(0), torch.ones((1, self.sz[3] * self.sz[2]))),
                            dim=0).unsqueeze(0).repeat(self.sz[0], 1, 1).to(four_point.device)
